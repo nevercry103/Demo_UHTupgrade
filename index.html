@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UHT-TA Upgrade — StepMap</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:       #0a0e1a;
+    --card:     #1a2236;
+    --border:   #2a3a55;
+    --text:     #e2e8f0;
+    --muted:    #64748b;
+    --accent:   #38bdf8;
+    --complete: #22c55e;
+    --progress: #f59e0b;
+    --notstart: #475569;
+    --phase1:   #3b82f6;
+    --phase2:   #10b981;
+    --phase3:   #f59e0b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+  }
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events:none; z-index:0;
+  }
+  .wrap { position:relative; z-index:1; padding: 32px 24px 80px; max-width:1500px; margin:0 auto; }
+
+  /* HEADER */
+  header { text-align:center; margin-bottom:40px; animation: fadeDown 0.7s ease both; }
+  .header-badge {
+    display:inline-block;
+    background: linear-gradient(135deg,#1e3a5f,#0f2040);
+    border:1px solid var(--phase1); border-radius:4px;
+    padding:4px 14px; font-family:'JetBrains Mono',monospace;
+    font-size:11px; color:var(--accent); letter-spacing:2px; margin-bottom:14px;
+  }
+  header h1 {
+    font-family:'Rajdhani',sans-serif; font-size:clamp(26px,4vw,50px);
+    font-weight:700; color:#fff; text-shadow:0 0 40px rgba(56,189,248,0.3); line-height:1.1;
+  }
+  header h1 span { color:var(--accent); }
+  header p { margin-top:8px; color:var(--muted); font-size:13px; letter-spacing:0.5px; }
+
+  /* TEAM SECTION */
+  .team-row {
+    display:flex; justify-content:center; gap:24px; margin-top:24px; flex-wrap:wrap; align-items:flex-start;
+  }
+  .tech-team-card {
+    background:linear-gradient(135deg,#0f1e3a,#0a1628);
+    border:1px solid var(--phase1); border-radius:14px;
+    padding:18px 24px; min-width:300px; position:relative; overflow:hidden;
+    box-shadow:0 0 30px rgba(59,130,246,0.1);
+  }
+  .tech-team-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+    background:linear-gradient(90deg,var(--phase1),var(--accent),var(--phase1));
+    border-radius:14px 14px 0 0;
+  }
+  .tech-team-card::after {
+    content:''; position:absolute; top:-40px; right:-40px;
+    width:120px; height:120px; border-radius:50%;
+    background:radial-gradient(circle,rgba(56,189,248,0.07),transparent 70%);
+    pointer-events:none;
+  }
+  .tech-team-header {
+    display:flex; flex-direction:column; align-items:center; gap:8px; margin-bottom:16px;
+    padding-bottom:12px; border-bottom:1px solid rgba(59,130,246,0.2); text-align:center;
+  }
+  .tech-dept-logo {
+    width:46px; height:46px; border-radius:10px;
+    background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(56,189,248,0.1));
+    border:1px solid rgba(59,130,246,0.4);
+    display:flex; align-items:center; justify-content:center;
+    font-size:22px; flex-shrink:0; box-shadow:0 0 12px rgba(59,130,246,0.2);
+  }
+  .tech-dept-label {
+    font-family:'JetBrains Mono',monospace; font-size:9px;
+    letter-spacing:2px; color:var(--accent); margin-bottom:3px;
+  }
+  .tech-dept-name {
+    font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:700; color:#fff; line-height:1;
+  }
+  .tech-dept-sub {
+    font-family:'JetBrains Mono',monospace; font-size:9px; color:#64748b; margin-top:2px; letter-spacing:1px;
+  }
+  .tech-members { display:flex; flex-direction:row; gap:14px; flex-wrap:wrap; justify-content:center; }
+  .tech-member {
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    background:rgba(255,255,255,0.03); border:1px solid rgba(59,130,246,0.15);
+    border-radius:8px; padding:12px 14px; transition:background 0.2s,border-color 0.2s;
+    text-align:center;
+  }
+  .tech-member:hover { background:rgba(59,130,246,0.07); border-color:rgba(59,130,246,0.35); }
+  .member-avatar {
+    width:36px; height:36px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:18px;
+    background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3);
+  }
+  .member-role {
+    font-family:'JetBrains Mono',monospace; font-size:9px;
+    color:var(--accent); letter-spacing:1.5px; margin-bottom:2px; text-align:center;
+  }
+  .member-name { font-family:'Rajdhani',sans-serif; font-size:16px; font-weight:700; color:#fff; line-height:1; text-align:center; }
+  .member-org  { font-family:'JetBrains Mono',monospace; font-size:9px; color:#64748b; margin-top:1px; text-align:center; }
+
+  /* PROJECT CARDS (supplier side) */
+  .project-cards { display:flex; flex-direction:column; gap:14px; }
+  .pcard {
+    display:flex; align-items:center; gap:12px;
+    background:#111827; border:1px solid var(--border);
+    border-radius:10px; padding:12px 20px;
+  }
+  .pcard-icon { font-size:22px; }
+  .pcard-tag  { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--muted); letter-spacing:1.5px; margin-bottom:2px; }
+  .pcard-name { font-family:'Rajdhani',sans-serif; font-size:17px; font-weight:700; line-height:1; }
+  .pcard-sub  { font-family:'JetBrains Mono',monospace; font-size:9px; color:#94a3b8; margin-top:2px; }
+  .c-blue  { color:var(--accent); }
+  .c-green { color:var(--phase2); }
+
+  /* MACHINE SECTION */
+  .machine-section {
+    margin: 36px 0 0;
+    animation: fadeUp 0.8s ease 0.12s both;
+  }
+  .machine-inner {
+    display:flex; gap:28px; align-items:stretch; flex-wrap:wrap;
+    background:linear-gradient(135deg,#0d1f35,#080f1e);
+    border:1px solid var(--border); border-radius:14px; overflow:hidden;
+  }
+  .machine-img-wrap {
+    flex:0 0 340px; min-width:260px; position:relative; overflow:hidden;
+  }
+  .machine-img-wrap img {
+    width:100%; height:100%; object-fit:cover; display:block;
+    filter:brightness(0.92) contrast(1.05);
+  }
+  .machine-img-overlay {
+    position:absolute; bottom:0; left:0; right:0;
+    background:linear-gradient(0deg,rgba(8,15,30,0.9),transparent);
+    padding:14px 16px 10px;
+  }
+  .machine-img-tag {
+    font-family:'JetBrains Mono',monospace; font-size:9px;
+    color:var(--accent); letter-spacing:2px;
+  }
+  .machine-img-name {
+    font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:700; color:#fff;
+  }
+  .machine-info {
+    flex:1; padding:24px 24px 24px 4px; display:flex; flex-direction:column; justify-content:center; gap:18px; min-width:280px;
+  }
+  .machine-info-title {
+    display:flex; align-items:center; gap:10px; margin-bottom:4px;
+  }
+  .machine-info-title h3 {
+    font-family:'Rajdhani',sans-serif; font-size:22px; font-weight:700; color:#fff; line-height:1.1;
+  }
+  .machine-info-title .mit-badge {
+    font-family:'JetBrains Mono',monospace; font-size:9px;
+    background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3);
+    color:var(--accent); padding:3px 9px; border-radius:4px; letter-spacing:1px; white-space:nowrap;
+  }
+  .machine-desc {
+    font-size:13px; color:#94a3b8; line-height:1.7;
+  }
+  .machine-desc strong { color:#cbd5e1; }
+  .machine-facts {
+    display:flex; gap:12px; flex-wrap:wrap;
+  }
+  .mfact {
+    display:flex; align-items:center; gap:7px;
+    background:rgba(255,255,255,0.03); border:1px solid var(--border);
+    border-radius:7px; padding:8px 13px;
+  }
+  .mfact-icon { font-size:14px; }
+  .mfact-text { font-family:'JetBrains Mono',monospace; font-size:10px; color:#94a3b8; line-height:1.3; }
+  .mfact-text strong { color:#e2e8f0; display:block; font-size:11px; }
+
+  /* UPGRADE VISUAL SECTION */
+  .upgrade-section {
+    margin: 36px 0 0;
+    animation: fadeUp 0.8s ease 0.12s both;
+  }
+  .upgrade-title-row {
+    display:flex; align-items:center; gap:14px; justify-content:center;
+    margin-bottom:18px;
+  }
+  .upgrade-title-row h2 {
+    font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:700; color:#fff;
+  }
+  .upgrade-title-row .utag {
+    font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:2px;
+    color:var(--accent); background:rgba(56,189,248,0.08);
+    border:1px solid rgba(56,189,248,0.25); border-radius:4px; padding:3px 10px;
+  }
+  .upgrade-panels {
+    display:grid; grid-template-columns:1fr auto 1fr; gap:0;
+    background:linear-gradient(135deg,#0d1f35,#080f1e);
+    border:1px solid var(--border); border-radius:14px; overflow:hidden;
+    align-items:stretch;
+  }
+  .up-panel {
+    padding:24px 20px; display:flex; flex-direction:column; gap:14px;
+  }
+  .up-panel-header {
+    display:flex; align-items:center; gap:10px; padding-bottom:12px;
+    border-bottom:1px solid rgba(255,255,255,0.07);
+  }
+  .up-panel-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  .up-panel-left  .up-panel-dot { background:#ef4444; box-shadow:0 0 6px #ef4444; }
+  .up-panel-right .up-panel-dot { background:var(--complete); box-shadow:0 0 6px var(--complete); }
+  .up-panel-title {
+    font-family:'Rajdhani',sans-serif; font-size:17px; font-weight:700; color:#fff;
+  }
+  .up-panel-sub {
+    font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--muted); margin-top:1px; letter-spacing:1px;
+  }
+  .up-badge {
+    margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:9px;
+    padding:2px 9px; border-radius:10px; letter-spacing:1px; white-space:nowrap;
+  }
+  .up-panel-left  .up-badge { background:rgba(239,68,68,0.12); color:#ef4444; border:1px solid rgba(239,68,68,0.3); }
+  .up-panel-right .up-badge { background:rgba(34,197,94,0.12); color:var(--complete); border:1px solid rgba(34,197,94,0.3); }
+
+  /* SVG panel */
+  .up-svg-wrap {
+    background:rgba(0,0,0,0.2);
+    display:flex; align-items:center; justify-content:center;
+    padding:10px; border-radius:8px;
+    border:1px solid rgba(255,255,255,0.06);
+  }
+  .up-svg-wrap svg { width:100%; height:auto; display:block; }
+
+  /* spec rows */
+  .up-specs { display:flex; flex-direction:column; gap:7px; }
+  .up-spec {
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:11px; padding:5px 0;
+    border-bottom:1px solid rgba(255,255,255,0.04);
+  }
+  .up-spec:last-child { border-bottom:none; }
+  .up-spec-label { color:#64748b; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:1px; }
+  .up-spec-val   { color:#e2e8f0; font-size:11px; font-weight:500; text-align:right; }
+  .up-panel-left  .up-spec-val { color:#fca5a5; }
+  .up-panel-right .up-spec-val { color:#86efac; }
+
+  /* middle arrow */
+  .up-arrow-mid {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:0 16px; background:rgba(56,189,248,0.03);
+    border-left:1px solid rgba(255,255,255,0.06);
+    border-right:1px solid rgba(255,255,255,0.06);
+    gap:8px; min-width:80px;
+  }
+  .up-arrow-svg { }
+  .up-arrow-label {
+    font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:700;
+    color:var(--accent); letter-spacing:1px; text-align:center; line-height:1.2;
+  }
+  .up-arrow-sub {
+    font-family:'JetBrains Mono',monospace; font-size:8px;
+    color:var(--muted); text-align:center; letter-spacing:1px;
+  }
+
+  /* WHY SECTION */
+  .why-section {
+    margin: 36px 0 8px;
+    animation: fadeUp 0.8s ease 0.15s both;
+  }
+  .why-title {
+    text-align:center;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px; letter-spacing:3px; color:var(--muted);
+    margin-bottom:18px;
+    display:flex; align-items:center; gap:14px; justify-content:center;
+  }
+  .why-title::before,.why-title::after {
+    content:''; flex:1; max-width:200px; height:1px;
+    background:linear-gradient(90deg,transparent,var(--border));
+  }
+  .why-title::after { background:linear-gradient(90deg,var(--border),transparent); }
+
+  .why-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:16px;
+  }
+  .why-card {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:20px 20px 18px;
+    position:relative; overflow:hidden;
+    transition:transform 0.2s, box-shadow 0.2s;
+  }
+  .why-card:hover {
+    transform:translateY(-3px);
+    box-shadow:0 8px 28px rgba(0,0,0,0.4);
+  }
+  .why-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:10px 10px 0 0;
+  }
+  .wc1::before { background:linear-gradient(90deg,#ef4444,#f97316); }
+  .wc2::before { background:linear-gradient(90deg,#f97316,#f59e0b); }
+  .wc3::before { background:linear-gradient(90deg,#3b82f6,#6366f1); }
+  .wc4::before { background:linear-gradient(90deg,#10b981,#38bdf8); }
+
+  .why-card-top {
+    display:flex; align-items:center; gap:12px; margin-bottom:12px;
+  }
+  .why-num {
+    font-family:'Rajdhani',sans-serif; font-size:32px; font-weight:700;
+    line-height:1; opacity:0.18; position:absolute; right:16px; top:12px;
+  }
+  .wc1 .why-num { color:#ef4444; }
+  .wc2 .why-num { color:#f59e0b; }
+  .wc3 .why-num { color:#3b82f6; }
+  .wc4 .why-num { color:#10b981; }
+
+  .why-icon-wrap {
+    width:40px; height:40px; border-radius:10px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:20px;
+  }
+  .wc1 .why-icon-wrap { background:rgba(239,68,68,0.12);  border:1px solid rgba(239,68,68,0.3); }
+  .wc2 .why-icon-wrap { background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); }
+  .wc3 .why-icon-wrap { background:rgba(59,130,246,0.12); border:1px solid rgba(59,130,246,0.3); }
+  .wc4 .why-icon-wrap { background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); }
+
+  .why-card-label {
+    font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:1.5px;
+    margin-bottom:3px;
+  }
+  .wc1 .why-card-label { color:#ef4444; }
+  .wc2 .why-card-label { color:#f59e0b; }
+  .wc3 .why-card-label { color:#3b82f6; }
+  .wc4 .why-card-label { color:#10b981; }
+
+  .why-card-title {
+    font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:700; color:#fff; line-height:1.2;
+  }
+  .why-card-body {
+    font-size:12.5px; color:#94a3b8; line-height:1.65;
+  }
+  .why-tag {
+    display:inline-block; margin-top:10px;
+    font-family:'JetBrains Mono',monospace; font-size:9px;
+    padding:2px 8px; border-radius:4px; letter-spacing:1px;
+  }
+  .wc1 .why-tag { background:rgba(239,68,68,0.1);  color:#ef4444;  border:1px solid rgba(239,68,68,0.25); }
+  .wc2 .why-tag { background:rgba(245,158,11,0.1); color:#f59e0b;  border:1px solid rgba(245,158,11,0.25); }
+  .wc3 .why-tag { background:rgba(59,130,246,0.1); color:#60a5fa;  border:1px solid rgba(59,130,246,0.25); }
+  .wc4 .why-tag { background:rgba(16,185,129,0.1); color:#34d399;  border:1px solid rgba(16,185,129,0.25); }
+
+  /* LEGEND */
+  .legend {
+    display:flex; gap:20px; justify-content:center; flex-wrap:wrap;
+    margin:32px 0; animation: fadeDown 0.8s ease 0.1s both;
+  }
+  .legend-item { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); font-family:'JetBrains Mono',monospace; }
+  .ldot { width:10px; height:10px; border-radius:50%; }
+  .ldiam {
+    width:12px; height:12px; transform:rotate(45deg); border-radius:2px;
+    border:1.5px solid; display:inline-block; margin-right:2px;
+  }
+
+  /* PHASES */
+  .phases { display:flex; flex-direction:column; gap:0; }
+  .phase { position:relative; animation:fadeUp 0.7s ease both; }
+  .phase:nth-child(1){animation-delay:0.1s}
+  .phase:nth-child(3){animation-delay:0.2s}
+  .phase:nth-child(5){animation-delay:0.3s}
+
+  .phase-header {
+    display:flex; align-items:center; gap:14px;
+    padding:14px 24px; border-radius:8px 8px 0 0;
+  }
+  .ph1 { background:linear-gradient(135deg,#1e3a6e,#152b52); border:1px solid var(--phase1); border-bottom:none; }
+  .ph2 { background:linear-gradient(135deg,#0d3320,#082818); border:1px solid var(--phase2); border-bottom:none; }
+  .ph3 { background:linear-gradient(135deg,#3d2700,#2a1c00); border:1px solid var(--phase3); border-bottom:none; }
+
+  .phase-icon {
+    width:36px; height:36px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;
+  }
+  .ph1 .phase-icon { background:rgba(59,130,246,0.2);  border:1px solid var(--phase1); }
+  .ph2 .phase-icon { background:rgba(16,185,129,0.2);  border:1px solid var(--phase2); }
+  .ph3 .phase-icon { background:rgba(245,158,11,0.2);  border:1px solid var(--phase3); }
+
+  .phase-label .tag { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:2px; opacity:0.7; }
+  .phase-label h2   { font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:700; color:#fff; line-height:1.2; }
+
+  .status-badge {
+    font-family:'JetBrains Mono',monospace; font-size:11px;
+    padding:4px 14px; border-radius:20px; letter-spacing:1px; margin-left:auto;
+  }
+  .b-complete { background:rgba(34,197,94,0.15);  color:var(--complete); border:1px solid rgba(34,197,94,0.4); }
+  .b-progress { background:rgba(245,158,11,0.15); color:var(--progress); border:1px solid rgba(245,158,11,0.4); }
+  .b-pending  { background:rgba(71,85,105,0.15);  color:var(--notstart); border:1px solid rgba(71,85,105,0.4); }
+
+  /* FLOW AREA */
+  .flow-container {
+    border-left:1px solid; border-right:1px solid; border-bottom:1px solid;
+    border-radius:0 0 8px 8px; padding:28px 24px; overflow-x:auto;
+  }
+  .ph1 + .flow-container { border-color:var(--phase1); background:linear-gradient(180deg,rgba(59,130,246,0.04),transparent); }
+  .ph2 + .flow-container { border-color:var(--phase2); background:linear-gradient(180deg,rgba(16,185,129,0.04),transparent); }
+  .ph3 + .flow-container { border-color:var(--phase3); background:linear-gradient(180deg,rgba(245,158,11,0.04),transparent); }
+
+  .flow-row  { display:flex; align-items:center; gap:0; flex-wrap:nowrap; min-width:max-content; }
+  .subrow-label {
+    display:block; font-family:'JetBrains Mono',monospace; font-size:9px;
+    color:var(--muted); letter-spacing:1.5px; margin-bottom:12px;
+  }
+  .flow-subrow {
+    display:flex; flex-direction:column;
+    margin-top:20px; padding-top:18px;
+    border-top:1px dashed rgba(255,255,255,0.07);
+  }
+
+  /* STEP NODE */
+  .step-wrap { display:flex; flex-direction:column; align-items:center; flex-shrink:0; }
+
+  .step-node {
+    width:170px; border-radius:6px; border:1.5px solid var(--border);
+    background:var(--card); padding:16px 14px 14px;
+    transition:transform 0.2s, box-shadow 0.2s; position:relative; overflow:hidden;
+    cursor:default;
+  }
+  .step-node::before {
+    content:''; position:absolute; top:0; left:0; right:0;
+    height:3px; border-radius:6px 6px 0 0;
+  }
+
+  /* status variants */
+  .s-complete .step-node { border-color:rgba(34,197,94,0.5); animation:glow-pulse 3s ease-in-out infinite; }
+  .s-complete .step-node::before { background:var(--complete); box-shadow:0 0 10px var(--complete); }
+  .s-complete .step-node:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(34,197,94,0.2); }
+
+  .s-progress .step-node { border-color:rgba(245,158,11,0.5); }
+  .s-progress .step-node::before { background:var(--progress); box-shadow:0 0 10px var(--progress); }
+  .s-progress .step-node:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(245,158,11,0.2); }
+
+  .s-notstart .step-node { border-color:rgba(71,85,105,0.35); opacity:0.72; }
+  .s-notstart .step-node::before { background:var(--notstart); }
+  .s-notstart .step-node:hover { opacity:1; transform:translateY(-3px); box-shadow:0 8px 24px rgba(71,85,105,0.2); }
+
+  .step-title {
+    font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:600;
+    color:#e2e8f0; line-height:1.35; margin-bottom:12px;
+  }
+
+  /* status pill inside card */
+  .step-status {
+    display:inline-flex; align-items:center; gap:5px;
+    font-family:'JetBrains Mono',monospace; font-size:9px;
+    padding:3px 9px; border-radius:12px; letter-spacing:0.8px;
+  }
+  .ss-complete { background:rgba(34,197,94,0.12);  color:var(--complete); border:1px solid rgba(34,197,94,0.35); }
+  .ss-progress { background:rgba(245,158,11,0.12); color:var(--progress); border:1px solid rgba(245,158,11,0.35); }
+  .ss-notstart { background:rgba(71,85,105,0.12);  color:#94a3b8;         border:1px solid rgba(71,85,105,0.35); }
+
+  .step-dot {
+    width:6px; height:6px; border-radius:50%; flex-shrink:0;
+  }
+  .ss-complete .step-dot { background:var(--complete); box-shadow:0 0 4px var(--complete); }
+  .ss-progress .step-dot { background:var(--progress); box-shadow:0 0 4px var(--progress); }
+  .ss-notstart .step-dot { background:#64748b; }
+
+  /* ARROW */
+  .arrow { display:flex; align-items:center; flex-shrink:0; }
+  .arrow-line { width:28px; height:2px; background:linear-gradient(90deg,var(--border),var(--muted)); }
+  .arrow-head { width:0; height:0; border-top:5px solid transparent; border-bottom:5px solid transparent; border-left:8px solid var(--muted); }
+
+  /* DECISION DIAMOND */
+  .decision-wrap { display:flex; flex-direction:column; align-items:center; flex-shrink:0; }
+  .diamond-outer { width:88px; height:88px; display:flex; align-items:center; justify-content:center; }
+  .diamond-shape {
+    width:62px; height:62px; transform:rotate(45deg); border-radius:4px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .d-ok    .diamond-shape { background:rgba(34,197,94,0.15);  border:1.5px solid var(--complete); }
+  .d-check .diamond-shape { background:rgba(245,158,11,0.15); border:1.5px solid var(--progress); }
+  .d-tbd   .diamond-shape { background:rgba(71,85,105,0.12);  border:1.5px solid rgba(71,85,105,0.5); }
+  .diamond-text {
+    transform:rotate(-45deg); font-family:'Rajdhani',sans-serif;
+    font-size:9px; font-weight:700; text-align:center; line-height:1.2; letter-spacing:0.5px;
+  }
+  .d-ok    .diamond-text { color:var(--complete); }
+  .d-check .diamond-text { color:var(--progress); }
+  .d-tbd   .diamond-text { color:#94a3b8; }
+  .diamond-label {
+    font-size:9px; font-family:'JetBrains Mono',monospace;
+    color:var(--muted); text-align:center; margin-top:2px; width:88px;
+  }
+  .d-ok    .diamond-label { color:var(--complete); }
+  .d-check .diamond-label { color:var(--progress); }
+
+  /* PHASE CONNECTOR */
+  .phase-connector { display:flex; flex-direction:column; align-items:center; padding:6px 0; }
+  .pc-line { width:2px; height:28px; background:linear-gradient(180deg,var(--border),rgba(56,189,248,0.3)); }
+  .pc-label {
+    font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--accent);
+    letter-spacing:1.5px; padding:3px 12px;
+    border:1px solid rgba(56,189,248,0.25); border-radius:3px;
+    background:rgba(56,189,248,0.05); margin:4px 0;
+  }
+
+  /* SUMMARY */
+  .summary-row {
+    display:flex; gap:16px; justify-content:center; flex-wrap:wrap;
+    margin-top:48px; animation:fadeUp 0.8s ease 0.5s both;
+  }
+  .pill {
+    display:flex; align-items:center; gap:12px;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:14px 22px; min-width:150px;
+  }
+  .pill-icon { font-size:22px; }
+  .pill-val  { font-family:'Rajdhani',sans-serif; font-size:28px; font-weight:700; line-height:1; }
+  .pill-key  { font-size:10px; color:var(--muted); font-family:'JetBrains Mono',monospace; letter-spacing:1px; }
+  .pv-green  { color:var(--complete); }
+  .pv-yellow { color:var(--progress); }
+  .pv-grey   { color:var(--notstart); }
+  .pv-blue   { color:var(--accent); }
+
+  /* FOOTER */
+  footer {
+    text-align:center; margin-top:56px; color:var(--muted);
+    font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1px; opacity:0.5;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeUp   { from{opacity:0;transform:translateY(20px)}  to{opacity:1;transform:translateY(0)} }
+  @keyframes glow-pulse {
+    0%,100%{ box-shadow:0 0 6px rgba(34,197,94,0.25); }
+    50%    { box-shadow:0 0 18px rgba(34,197,94,0.55); }
+  }
+  ::-webkit-scrollbar { width:6px; height:6px; }
+  ::-webkit-scrollbar-track { background:var(--bg); }
+  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ── HEADER ── -->
+  <header>
+    <div class="header-badge">ST3 · TLC · VIETNAM · 2025–2026</div>
+    <h1>UHT-TA PLC Upgrade <span>Stepmap</span></h1>
+    <p>S7-300 → S7-1500 &nbsp;|&nbsp; TIA Portal V19 &nbsp;|&nbsp; Flowchart with Decision Gates</p>
+
+    <div class="team-row">
+
+      <!-- Technical Department big card -->
+      <div class="tech-team-card">
+        <div class="tech-team-header">
+          <div class="tech-dept-logo">⚡</div>
+          <div>
+            <div class="tech-dept-label">DEPARTMENT</div>
+            <div class="tech-dept-name">Technical Team</div>
+            <div class="tech-dept-sub">ST3 · BEL TECH VIETNAM</div>
+          </div>
+        </div>
+        <div class="tech-members">
+          <div class="tech-member">
+            <div class="member-avatar">🛠️</div>
+            <div>
+              <div class="member-role">PROJECT SPONSOR</div>
+              <div class="member-name">MDN Thuan</div>
+              <div class="member-org">Technical Manager · BEL Tech Vietnam</div>
+            </div>
+          </div>
+          <div class="tech-member">
+            <div class="member-avatar">👷</div>
+            <div>
+              <div class="member-role">PROJECT LEADER</div>
+              <div class="member-name">HD Huy</div>
+              <div class="member-org">BEL Tech Vietnam</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Supplier card -->
+      <div class="project-cards">
+        <div class="pcard">
+          <div class="pcard-icon">🤝</div>
+          <div>
+            <div class="pcard-tag">LOCAL SUPPLIER</div>
+            <div class="pcard-name c-green">Cosin Automation</div>
+            <div class="pcard-sub">Electrical &amp; Engineering</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ── UPGRADE VISUAL ── -->
+  <div class="upgrade-section">
+    <div class="upgrade-title-row">
+      <span class="utag">HARDWARE UPGRADE</span>
+      <h2>System Migration Overview</h2>
+      <span class="utag">S7-300 → S7-1500</span>
+    </div>
+
+    <div class="upgrade-panels">
+
+      <!-- LEFT: S7-300 (OLD) -->
+      <div class="up-panel up-panel-left">
+        <div class="up-panel-header">
+          <div class="up-panel-dot"></div>
+          <div>
+            <div class="up-panel-title">SIMATIC S7-300</div>
+            <div class="up-panel-sub">STEP 7 Manager (Classic) · Profibus DP</div>
+          </div>
+          <span class="up-badge">⚠ LEGACY</span>
+        </div>
+
+        <!-- SVG: S7-300 rack illustration -->
+        <div class="up-svg-wrap">
+          <svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg" style="max-height:160px">
+            <!-- Rail -->
+            <rect x="10" y="130" width="300" height="8" rx="2" fill="#334155"/>
+            <!-- PSU -->
+            <rect x="14" y="40" width="44" height="88" rx="3" fill="#1e293b" stroke="#475569" stroke-width="1.2"/>
+            <rect x="18" y="46" width="36" height="18" rx="2" fill="#0f172a"/>
+            <text x="36" y="58" font-family="monospace" font-size="6" fill="#94a3b8" text-anchor="middle">PSU</text>
+            <rect x="22" y="72" width="10" height="4" rx="1" fill="#ef4444" opacity="0.8"/>
+            <rect x="36" y="72" width="10" height="4" rx="1" fill="#22c55e" opacity="0.8"/>
+            <text x="36" y="118" font-family="monospace" font-size="5" fill="#64748b" text-anchor="middle">PS 307</text>
+
+            <!-- CPU 315 -->
+            <rect x="62" y="35" width="54" height="93" rx="3" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.2"/>
+            <rect x="66" y="41" width="46" height="28" rx="2" fill="#0f2040"/>
+            <text x="89" y="52" font-family="monospace" font-size="7" fill="#60a5fa" text-anchor="middle">CPU</text>
+            <text x="89" y="62" font-family="monospace" font-size="6" fill="#3b82f6" text-anchor="middle">315-2 DP</text>
+            <rect x="70" y="75" width="7" height="5" rx="1" fill="#ef4444" opacity="0.7"/>
+            <rect x="80" y="75" width="7" height="5" rx="1" fill="#f59e0b" opacity="0.7"/>
+            <rect x="90" y="75" width="7" height="5" rx="1" fill="#22c55e" opacity="0.7"/>
+            <!-- MPI port -->
+            <rect x="68" y="84" width="18" height="8" rx="1" fill="#0f172a" stroke="#475569" stroke-width="0.8"/>
+            <text x="77" y="90" font-family="monospace" font-size="5" fill="#64748b" text-anchor="middle">MPI</text>
+            <!-- Profibus port -->
+            <rect x="90" y="84" width="18" height="8" rx="1" fill="#0f172a" stroke="#475569" stroke-width="0.8"/>
+            <text x="99" y="90" font-family="monospace" font-size="5" fill="#64748b" text-anchor="middle">PB</text>
+            <text x="89" y="120" font-family="monospace" font-size="5" fill="#64748b" text-anchor="middle">S7-315</text>
+
+            <!-- DI module -->
+            <rect x="120" y="40" width="36" height="88" rx="3" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+            <rect x="124" y="46" width="28" height="14" rx="1" fill="#0f172a"/>
+            <text x="138" y="55" font-family="monospace" font-size="5.5" fill="#94a3b8" text-anchor="middle">DI 16x</text>
+            <!-- I/O pins row 1 -->
+            <g fill="#22c55e" opacity="0.6">
+              <rect x="125" y="65" width="4" height="3" rx="0.5"/>
+              <rect x="131" y="65" width="4" height="3" rx="0.5"/>
+              <rect x="137" y="65" width="4" height="3" rx="0.5"/>
+              <rect x="143" y="65" width="4" height="3" rx="0.5"/>
+            </g>
+            <g fill="#22c55e" opacity="0.6">
+              <rect x="125" y="71" width="4" height="3" rx="0.5"/>
+              <rect x="131" y="71" width="4" height="3" rx="0.5"/>
+              <rect x="137" y="71" width="4" height="3" rx="0.5"/>
+              <rect x="143" y="71" width="4" height="3" rx="0.5"/>
+            </g>
+            <text x="138" y="118" font-family="monospace" font-size="5" fill="#64748b" text-anchor="middle">SM 321</text>
+
+            <!-- DO module -->
+            <rect x="160" y="40" width="36" height="88" rx="3" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+            <rect x="164" y="46" width="28" height="14" rx="1" fill="#0f172a"/>
+            <text x="178" y="55" font-family="monospace" font-size="5.5" fill="#94a3b8" text-anchor="middle">DO 16x</text>
+            <g fill="#f59e0b" opacity="0.6">
+              <rect x="165" y="65" width="4" height="3" rx="0.5"/>
+              <rect x="171" y="65" width="4" height="3" rx="0.5"/>
+              <rect x="177" y="65" width="4" height="3" rx="0.5"/>
+              <rect x="183" y="65" width="4" height="3" rx="0.5"/>
+            </g>
+            <g fill="#f59e0b" opacity="0.6">
+              <rect x="165" y="71" width="4" height="3" rx="0.5"/>
+              <rect x="171" y="71" width="4" height="3" rx="0.5"/>
+              <rect x="177" y="71" width="4" height="3" rx="0.5"/>
+              <rect x="183" y="71" width="4" height="3" rx="0.5"/>
+            </g>
+            <text x="178" y="118" font-family="monospace" font-size="5" fill="#64748b" text-anchor="middle">SM 322</text>
+
+            <!-- AI module -->
+            <rect x="200" y="40" width="36" height="88" rx="3" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+            <rect x="204" y="46" width="28" height="14" rx="1" fill="#0f172a"/>
+            <text x="218" y="55" font-family="monospace" font-size="5.5" fill="#94a3b8" text-anchor="middle">AI 8x</text>
+            <g fill="#38bdf8" opacity="0.6">
+              <rect x="205" y="65" width="4" height="3" rx="0.5"/>
+              <rect x="211" y="65" width="4" height="3" rx="0.5"/>
+              <rect x="217" y="65" width="4" height="3" rx="0.5"/>
+              <rect x="223" y="65" width="4" height="3" rx="0.5"/>
+            </g>
+            <text x="218" y="118" font-family="monospace" font-size="5" fill="#64748b" text-anchor="middle">SM 331</text>
+
+            <!-- CP module -->
+            <rect x="240" y="40" width="36" height="88" rx="3" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+            <rect x="244" y="46" width="28" height="14" rx="1" fill="#0f172a"/>
+            <text x="258" y="55" font-family="monospace" font-size="5.5" fill="#94a3b8" text-anchor="middle">CP 343</text>
+            <rect x="248" y="66" width="20" height="8" rx="2" fill="#0f172a" stroke="#475569" stroke-width="0.8"/>
+            <text x="258" y="72" font-family="monospace" font-size="5" fill="#f59e0b" text-anchor="middle">Profibus</text>
+            <text x="258" y="118" font-family="monospace" font-size="5" fill="#64748b" text-anchor="middle">CP 343-1</text>
+
+            <!-- Backplane bus line -->
+            <line x1="14" y1="136" x2="280" y2="136" stroke="#334155" stroke-width="2"/>
+            <!-- Label -->
+            <text x="160" y="152" font-family="monospace" font-size="7" fill="#475569" text-anchor="middle">PROFIBUS DP BACKPLANE BUS</text>
+          </svg>
+        </div>
+
+        <div class="up-specs">
+          <div class="up-spec"><span class="up-spec-label">CPU</span><span class="up-spec-val">315-2 DP / 317-2 PN</span></div>
+          <div class="up-spec"><span class="up-spec-label">SOFTWARE</span><span class="up-spec-val">Step 7 Manager V5.x</span></div>
+          <div class="up-spec"><span class="up-spec-label">FIELDBUS</span><span class="up-spec-val">Profibus DP</span></div>
+          <div class="up-spec"><span class="up-spec-label">HMI SW</span><span class="up-spec-val">WinCC flexible V15</span></div>
+          <div class="up-spec"><span class="up-spec-label">DIAGNOSTICS</span><span class="up-spec-val">Error codes only</span></div>
+          <div class="up-spec"><span class="up-spec-label">AGE</span><span class="up-spec-val">~16 years · EOL</span></div>
+          <div class="up-spec"><span class="up-spec-label">NETWORK</span><span class="up-spec-val">Isolated · No LAN</span></div>
+        </div>
+      </div>
+
+      <!-- MIDDLE ARROW -->
+      <div class="up-arrow-mid">
+        <svg width="40" height="60" viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg">
+          <!-- animated arrow -->
+          <defs>
+            <linearGradient id="arrowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#3b82f6"/>
+              <stop offset="100%" stop-color="#22c55e"/>
+            </linearGradient>
+          </defs>
+          <line x1="5" y1="30" x2="28" y2="30" stroke="url(#arrowGrad)" stroke-width="2.5" stroke-linecap="round"/>
+          <polygon points="28,24 38,30 28,36" fill="url(#arrowGrad)"/>
+        </svg>
+        <div class="up-arrow-label">UPGRADE</div>
+        <div class="up-arrow-sub">BEL OT<br/>STANDARD</div>
+      </div>
+
+      <!-- RIGHT: S7-1500 (NEW) -->
+      <div class="up-panel up-panel-right">
+        <div class="up-panel-header">
+          <div class="up-panel-dot"></div>
+          <div>
+            <div class="up-panel-title">SIMATIC S7-1500</div>
+            <div class="up-panel-sub">TIA Portal V19 · Profinet IO · Industry 4.0</div>
+          </div>
+          <span class="up-badge">✓ NEW STANDARD</span>
+        </div>
+
+        <!-- SVG: S7-1500 rack illustration -->
+        <div class="up-svg-wrap">
+          <svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg" style="max-height:160px">
+            <!-- Rail -->
+            <rect x="10" y="130" width="300" height="8" rx="2" fill="#1e3a2a"/>
+            <!-- PSU -->
+            <rect x="14" y="38" width="44" height="90" rx="3" fill="#0d2218" stroke="#22c55e" stroke-width="1.2"/>
+            <rect x="18" y="44" width="36" height="20" rx="2" fill="#051a10"/>
+            <text x="36" y="57" font-family="monospace" font-size="6" fill="#4ade80" text-anchor="middle">PM 70W</text>
+            <rect x="22" y="70" width="10" height="4" rx="1" fill="#22c55e" opacity="0.9"/>
+            <rect x="36" y="70" width="10" height="4" rx="1" fill="#22c55e" opacity="0.6"/>
+            <text x="36" y="120" font-family="monospace" font-size="5" fill="#4ade80" text-anchor="middle">PM 70W</text>
+
+            <!-- CPU 1515 with display -->
+            <rect x="62" y="32" width="58" height="96" rx="3" fill="#0d2218" stroke="#22c55e" stroke-width="1.5"/>
+            <!-- built-in display -->
+            <rect x="66" y="38" width="50" height="22" rx="2" fill="#051a10" stroke="#22c55e" stroke-width="0.8"/>
+            <text x="91" y="47" font-family="monospace" font-size="6" fill="#4ade80" text-anchor="middle">CPU 1515</text>
+            <text x="91" y="56" font-family="monospace" font-size="5" fill="#22c55e" text-anchor="middle">RUN ●</text>
+            <!-- status LEDs -->
+            <rect x="68" y="66" width="7" height="5" rx="1" fill="#22c55e" opacity="0.9"/>
+            <rect x="78" y="66" width="7" height="5" rx="1" fill="#22c55e" opacity="0.6"/>
+            <rect x="88" y="66" width="7" height="5" rx="1" fill="#22c55e" opacity="0.4"/>
+            <!-- Profinet RJ45 -->
+            <rect x="68" y="76" width="20" height="10" rx="1" fill="#051a10" stroke="#22c55e" stroke-width="0.8"/>
+            <text x="78" y="83" font-family="monospace" font-size="5" fill="#4ade80" text-anchor="middle">PN/IE</text>
+            <!-- Memory card slot -->
+            <rect x="92" y="76" width="14" height="10" rx="1" fill="#051a10" stroke="#334155" stroke-width="0.8"/>
+            <text x="99" y="83" font-family="monospace" font-size="5" fill="#64748b" text-anchor="middle">SD</text>
+            <text x="91" y="120" font-family="monospace" font-size="5" fill="#4ade80" text-anchor="middle">CPU 1515-2 PN</text>
+
+            <!-- DI module ET200 style -->
+            <rect x="124" y="37" width="34" height="91" rx="3" fill="#0d2218" stroke="#22c55e" stroke-width="1"/>
+            <rect x="128" y="43" width="26" height="14" rx="1" fill="#051a10"/>
+            <text x="141" y="52" font-family="monospace" font-size="5.5" fill="#4ade80" text-anchor="middle">DI 16x</text>
+            <g fill="#22c55e" opacity="0.7">
+              <rect x="129" y="62" width="4" height="3" rx="0.5"/>
+              <rect x="135" y="62" width="4" height="3" rx="0.5"/>
+              <rect x="141" y="62" width="4" height="3" rx="0.5"/>
+              <rect x="147" y="62" width="4" height="3" rx="0.5"/>
+            </g>
+            <g fill="#22c55e" opacity="0.7">
+              <rect x="129" y="68" width="4" height="3" rx="0.5"/>
+              <rect x="135" y="68" width="4" height="3" rx="0.5"/>
+              <rect x="141" y="68" width="4" height="3" rx="0.5"/>
+              <rect x="147" y="68" width="4" height="3" rx="0.5"/>
+            </g>
+            <text x="141" y="120" font-family="monospace" font-size="5" fill="#4ade80" text-anchor="middle">DI 16x DC</text>
+
+            <!-- DO module -->
+            <rect x="162" y="37" width="34" height="91" rx="3" fill="#0d2218" stroke="#22c55e" stroke-width="1"/>
+            <rect x="166" y="43" width="26" height="14" rx="1" fill="#051a10"/>
+            <text x="179" y="52" font-family="monospace" font-size="5.5" fill="#4ade80" text-anchor="middle">DQ 16x</text>
+            <g fill="#38bdf8" opacity="0.7">
+              <rect x="167" y="62" width="4" height="3" rx="0.5"/>
+              <rect x="173" y="62" width="4" height="3" rx="0.5"/>
+              <rect x="179" y="62" width="4" height="3" rx="0.5"/>
+              <rect x="185" y="62" width="4" height="3" rx="0.5"/>
+            </g>
+            <g fill="#38bdf8" opacity="0.7">
+              <rect x="167" y="68" width="4" height="3" rx="0.5"/>
+              <rect x="173" y="68" width="4" height="3" rx="0.5"/>
+              <rect x="179" y="68" width="4" height="3" rx="0.5"/>
+              <rect x="185" y="68" width="4" height="3" rx="0.5"/>
+            </g>
+            <text x="179" y="120" font-family="monospace" font-size="5" fill="#4ade80" text-anchor="middle">DQ 16x DC</text>
+
+            <!-- AI module -->
+            <rect x="200" y="37" width="34" height="91" rx="3" fill="#0d2218" stroke="#22c55e" stroke-width="1"/>
+            <rect x="204" y="43" width="26" height="14" rx="1" fill="#051a10"/>
+            <text x="217" y="52" font-family="monospace" font-size="5.5" fill="#4ade80" text-anchor="middle">AI 8x</text>
+            <g fill="#f59e0b" opacity="0.7">
+              <rect x="205" y="62" width="4" height="3" rx="0.5"/>
+              <rect x="211" y="62" width="4" height="3" rx="0.5"/>
+              <rect x="217" y="62" width="4" height="3" rx="0.5"/>
+              <rect x="223" y="62" width="4" height="3" rx="0.5"/>
+            </g>
+            <text x="217" y="120" font-family="monospace" font-size="5" fill="#4ade80" text-anchor="middle">AI U/I HS</text>
+
+            <!-- Profinet switch icon -->
+            <rect x="238" y="37" width="36" height="91" rx="3" fill="#0d2218" stroke="#38bdf8" stroke-width="1.2"/>
+            <rect x="242" y="43" width="28" height="14" rx="1" fill="#051a10"/>
+            <text x="256" y="52" font-family="monospace" font-size="5.5" fill="#38bdf8" text-anchor="middle">IE/PN</text>
+            <!-- RJ45 ports -->
+            <rect x="244" y="62" width="10" height="7" rx="1" fill="#051a10" stroke="#38bdf8" stroke-width="0.7"/>
+            <rect x="258" y="62" width="10" height="7" rx="1" fill="#051a10" stroke="#38bdf8" stroke-width="0.7"/>
+            <text x="256" y="120" font-family="monospace" font-size="5" fill="#38bdf8" text-anchor="middle">SCALANCE</text>
+
+            <!-- Profinet bus line (green) -->
+            <line x1="14" y1="136" x2="280" y2="136" stroke="#1e3a2a" stroke-width="2"/>
+            <line x1="14" y1="133" x2="280" y2="133" stroke="#22c55e" stroke-width="1" stroke-dasharray="6,4" opacity="0.5"/>
+            <text x="160" y="152" font-family="monospace" font-size="7" fill="#22c55e" text-anchor="middle" opacity="0.7">PROFINET IO BACKPLANE · INDUSTRIAL LAN READY</text>
+          </svg>
+        </div>
+
+        <div class="up-specs">
+          <div class="up-spec"><span class="up-spec-label">CPU</span><span class="up-spec-val">1515-2 PN / 1516-3 PN</span></div>
+          <div class="up-spec"><span class="up-spec-label">SOFTWARE</span><span class="up-spec-val">TIA Portal V19</span></div>
+          <div class="up-spec"><span class="up-spec-label">FIELDBUS</span><span class="up-spec-val">Profinet IO</span></div>
+          <div class="up-spec"><span class="up-spec-label">HMI SW</span><span class="up-spec-val">WinCC Comfort V19</span></div>
+          <div class="up-spec"><span class="up-spec-label">DIAGNOSTICS</span><span class="up-spec-val">Plain text on display</span></div>
+          <div class="up-spec"><span class="up-spec-label">STANDARD</span><span class="up-spec-val">BEL OT · Future-proof</span></div>
+          <div class="up-spec"><span class="up-spec-label">NETWORK</span><span class="up-spec-val">Industrial LAN · Edge · PI Vision</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── MACHINE INTRO ── -->
+  <div class="machine-section">
+    <div class="machine-inner">
+      <div class="machine-img-wrap">
+        <img src="data:image/png;base64,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" alt="UHT-TA Machine"/>
+        <div class="machine-img-overlay">
+          <div class="machine-img-tag">PRODUCTION EQUIPMENT</div>
+          <div class="machine-img-name">UHT-TA System · ST3 Vietnam</div>
+        </div>
+      </div>
+      <div class="machine-info">
+        <div>
+          <div class="machine-info-title">
+            <h3>Bel Vietnam — ST3 Factory</h3>
+            <span class="mit-badge">BINH DUONG · VIETNAM</span>
+          </div>
+          <div class="machine-desc">
+            <strong>Bel Vietnam</strong> is a subsidiary of <strong>Bel Group — France</strong>, a globally recognized producer of cheese and dairy products. The ST3 production plant is located in <strong>Song Than 3 Industrial Zone, Binh Duong Province</strong>, and has been operational since June 2016.<br/><br/>
+            The facility is certified to international standards including <strong>FSSC 22000, ISO 14001, OHSAS 18001</strong> and <strong>HALAL</strong>. Core brands produced here include <strong>La Vache qui rit® (Con Bò Cười®), Mini Babybel®, Kiri®</strong> and <strong>Boursin®</strong>, using premium ingredients sourced from France, New Zealand, and Europe.
+          </div>
+        </div>
+        <div class="machine-facts">
+          <div class="mfact"><div class="mfact-icon">🏭</div><div class="mfact-text"><strong>Song Than 3 IZ</strong>Binh Duong Province</div></div>
+          <div class="mfact"><div class="mfact-icon">📅</div><div class="mfact-text"><strong>Since 2016</strong>Production Plant</div></div>
+          <div class="mfact"><div class="mfact-icon">✅</div><div class="mfact-text"><strong>FSSC 22000</strong>ISO 14001 · HALAL</div></div>
+          <div class="mfact"><div class="mfact-icon">🧀</div><div class="mfact-text"><strong>Bel Group</strong>France · Global Brand</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── WHY THIS PROJECT ── -->
+  <div class="why-section">
+    <div class="why-title">WHY WE HAVE THIS PROJECT</div>
+    <div class="why-grid">
+
+      <!-- Reason 1 -->
+      <div class="why-card wc1">
+        <div class="why-num">01</div>
+        <div class="why-card-top">
+          <div class="why-icon-wrap">⏱️</div>
+          <div>
+            <div class="why-card-label">HARDWARE LIFECYCLE</div>
+            <div class="why-card-title">System Age &amp; End-of-Life Hardware</div>
+          </div>
+        </div>
+        <div class="why-card-body">
+          The UHT-TA automation system has been in operation for nearly <strong style="color:#fca5a5">16 years</strong>. The S7-300 PLC hardware and associated I/O modules are now out of date, with spare parts increasingly scarce and no longer manufactured. Continued operation poses a significant risk of unplanned downtime.
+        </div>
+        <span class="why-tag">RISK: HARDWARE OBSOLESCENCE</span>
+      </div>
+
+      <!-- Reason 2 -->
+      <div class="why-card wc2">
+        <div class="why-num">02</div>
+        <div class="why-card-top">
+          <div class="why-icon-wrap">💾</div>
+          <div>
+            <div class="why-card-label">SOFTWARE OBSOLESCENCE</div>
+            <div class="why-card-title">Step7 Manager — Limited Diagnostics &amp; Innovation</div>
+          </div>
+        </div>
+        <div class="why-card-body">
+          The legacy <strong style="color:#fcd34d">Step7 Manager</strong> programming environment is no longer actively supported. It offers limited diagnostics tools, making fault-finding slow and complex. It cannot support modern programming structures, making it difficult to adapt the system when new production demands arise.
+        </div>
+        <span class="why-tag">RISK: SLOW TROUBLESHOOTING</span>
+      </div>
+
+      <!-- Reason 3 -->
+      <div class="why-card wc3">
+        <div class="why-num">03</div>
+        <div class="why-card-top">
+          <div class="why-icon-wrap">🏢</div>
+          <div>
+            <div class="why-card-label">GROUP COMPLIANCE</div>
+            <div class="why-card-title">BEL Groupe New OT Standard for Siemens at ST3</div>
+          </div>
+        </div>
+        <div class="why-card-body">
+          BEL Groupe has issued a new <strong style="color:#93c5fd">OT (Operational Technology) standard</strong> mandating the adoption of S7-1500 and TIA Portal V19 across all sites including ST3 Vietnam. This upgrade ensures full compliance with group-wide cybersecurity, engineering, and maintenance policies.
+        </div>
+        <span class="why-tag">DRIVER: GROUP OT STANDARD</span>
+      </div>
+
+      <!-- Reason 4 -->
+      <div class="why-card wc4">
+        <div class="why-num">04</div>
+        <div class="why-card-top">
+          <div class="why-icon-wrap">🌐</div>
+          <div>
+            <div class="why-card-label">DIGITAL TRANSFORMATION</div>
+            <div class="why-card-title">Industrial LAN, Edge Platform &amp; PI Vision</div>
+          </div>
+        </div>
+        <div class="why-card-body">
+          With the S7-1500 and Profinet architecture, the UHT-TA system can be integrated into the <strong style="color:#6ee7b7">Industrial LAN</strong>. This enables real-time data collection to the <strong style="color:#6ee7b7">Edge Platform</strong> and visualisation through <strong style="color:#6ee7b7">PI Vision</strong> — unlocking KPI dashboards, predictive maintenance, and data-driven production decisions.
+        </div>
+        <span class="why-tag">BENEFIT: INDUSTRY 4.0 READY</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── LEGEND ── -->
+  <div class="legend">
+    <div class="legend-item"><span class="ldot" style="background:var(--complete);box-shadow:0 0 6px var(--complete)"></span>Complete</div>
+    <div class="legend-item"><span class="ldot" style="background:var(--progress);box-shadow:0 0 6px var(--progress)"></span>In Progress</div>
+    <div class="legend-item"><span class="ldot" style="background:var(--notstart)"></span>Not Started</div>
+    <div class="legend-item"><span class="ldiam" style="background:rgba(34,197,94,0.15);border-color:var(--complete)"></span>Gate OK</div>
+    <div class="legend-item"><span class="ldiam" style="background:rgba(245,158,11,0.15);border-color:var(--progress)"></span>Gate Review</div>
+    <div class="legend-item"><span class="ldiam" style="background:rgba(71,85,105,0.12);border-color:#475569"></span>Gate TBD</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PHASES
+  ══════════════════════════════════════════ -->
+  <div class="phases">
+
+    <!-- ── GROUP STEP 1 ── -->
+    <div class="phase">
+      <div class="phase-header ph1">
+        <div class="phase-icon">📋</div>
+        <div class="phase-label">
+          <div class="tag">GROUP STEP 1</div>
+          <h2>Pre-Engineering &amp; CAPEX Approval</h2>
+        </div>
+        <span class="status-badge b-complete">✓ COMPLETE</span>
+      </div>
+      <div class="flow-container">
+        <div class="flow-row">
+
+          <!-- Task 1 -->
+          <div class="step-wrap s-complete">
+            <div class="step-node">
+              <div class="step-title">Proposal to Capex</div>
+              <span class="step-status ss-complete"><span class="step-dot"></span>Complete</span>
+            </div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="decision-wrap d-ok">
+            <div class="diamond-outer"><div class="diamond-shape"><div class="diamond-text">CAPEX<br>APPROVED?</div></div></div>
+            <div class="diamond-label">✓ YES</div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+          <!-- Task 2 -->
+          <div class="step-wrap s-complete">
+            <div class="step-node">
+              <div class="step-title">Central Engineering Alignment</div>
+              <span class="step-status ss-complete"><span class="step-dot"></span>Complete</span>
+            </div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="decision-wrap d-ok">
+            <div class="diamond-outer"><div class="diamond-shape"><div class="diamond-text">TECH<br>ALIGNED?</div></div></div>
+            <div class="diamond-label">✓ YES</div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+          <!-- Task 3 -->
+          <div class="step-wrap s-complete">
+            <div class="step-node">
+              <div class="step-title">Process Order Automation List</div>
+              <span class="step-status ss-complete"><span class="step-dot"></span>Complete</span>
+            </div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="decision-wrap d-ok">
+            <div class="diamond-outer"><div class="diamond-shape"><div class="diamond-text">LIST<br>APPROVED?</div></div></div>
+            <div class="diamond-label">✓ YES</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase connector -->
+    <div class="phase-connector">
+      <div class="pc-line"></div>
+      <div class="pc-label">▶ PHASE GATE 1 PASSED — PROCEED TO STEP 2</div>
+      <div class="pc-line"></div>
+    </div>
+
+    <!-- ── GROUP STEP 2 ── -->
+    <div class="phase">
+      <div class="phase-header ph2">
+        <div class="phase-icon">⚙️</div>
+        <div class="phase-label">
+          <div class="tag">GROUP STEP 2</div>
+          <h2>Engineering, Migration &amp; Simulation Testing</h2>
+        </div>
+        <span class="status-badge b-progress">◉ IN PROGRESS</span>
+      </div>
+      <div class="flow-container">
+
+        <!-- Sub-row A -->
+        <span class="subrow-label">▸ ENGINEERING &amp; MIGRATION</span>
+        <div class="flow-row">
+
+          <!-- Task 4 -->
+          <div class="step-wrap s-progress">
+            <div class="step-node">
+              <div class="step-title">Electrical Drawing S7-1500 (Cosin Automation)</div>
+              <span class="step-status ss-progress"><span class="step-dot"></span>In Progress</span>
+            </div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+          <!-- Task 5 -->
+          <div class="step-wrap s-complete">
+            <div class="step-node">
+              <div class="step-title">Migrate PLC + HMI Program (TIA V19)</div>
+              <span class="step-status ss-complete"><span class="step-dot"></span>Complete</span>
+            </div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+          <!-- Task 6 -->
+          <div class="step-wrap s-complete">
+            <div class="step-node">
+              <div class="step-title">Hardware Detection Test</div>
+              <span class="step-status ss-complete"><span class="step-dot"></span>Complete</span>
+            </div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+          <div class="decision-wrap d-ok">
+            <div class="diamond-outer"><div class="diamond-shape"><div class="diamond-text">HW FAT<br>PASSED?</div></div></div>
+            <div class="diamond-label">✓ YES</div>
+          </div>
+
+        </div>
+
+        <!-- Sub-row B -->
+        <div class="flow-subrow">
+          <span class="subrow-label">▸ SIMULATION TESTING</span>
+          <div class="flow-row">
+
+            <!-- Task 7 -->
+            <div class="step-wrap s-progress">
+              <div class="step-node">
+                <div class="step-title">Test Comm. with KS200 (Simulation)</div>
+                <span class="step-status ss-progress"><span class="step-dot"></span>In Progress</span>
+              </div>
+            </div>
+            <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+            <div class="decision-wrap d-check">
+              <div class="diamond-outer"><div class="diamond-shape"><div class="diamond-text">COMM<br>OK?</div></div></div>
+              <div class="diamond-label">⚠ REVIEW</div>
+            </div>
+            <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+            <!-- Task 8 -->
+            <div class="step-wrap s-notstart">
+              <div class="step-node">
+                <div class="step-title">Test Comm. Main Conveyor (Simulation)</div>
+                <span class="step-status ss-notstart"><span class="step-dot"></span>Not Started</span>
+              </div>
+            </div>
+            <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+            <!-- Task 9 -->
+            <div class="step-wrap s-notstart">
+              <div class="step-node">
+                <div class="step-title">Profinet Inverter Migration (Profibus → Profinet)</div>
+                <span class="step-status ss-notstart"><span class="step-dot"></span>Not Started</span>
+              </div>
+            </div>
+            <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+            <!-- Task 10 -->
+            <div class="step-wrap s-notstart">
+              <div class="step-node">
+                <div class="step-title">HMI TP1200 Communication Verification</div>
+                <span class="step-status ss-notstart"><span class="step-dot"></span>Not Started</span>
+              </div>
+            </div>
+            <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+            <div class="decision-wrap d-tbd">
+              <div class="diamond-outer"><div class="diamond-shape"><div class="diamond-text">SIM<br>TESTS<br>OK?</div></div></div>
+              <div class="diamond-label">⏳ TBD</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Phase connector -->
+    <div class="phase-connector">
+      <div class="pc-line"></div>
+      <div class="pc-label">▶ PHASE GATE 2 — PENDING SIMULATION SIGN-OFF</div>
+      <div class="pc-line"></div>
+    </div>
+
+    <!-- ── GROUP STEP 3 ── -->
+    <div class="phase">
+      <div class="phase-header ph3">
+        <div class="phase-icon">🔧</div>
+        <div class="phase-label">
+          <div class="tag">GROUP STEP 3</div>
+          <h2>On-Site Testing &amp; Commissioning</h2>
+        </div>
+        <span class="status-badge b-pending">⏳ PENDING</span>
+      </div>
+      <div class="flow-container">
+
+        <span class="subrow-label">▸ REQUIRES PLANT SHUTDOWN WINDOW — DATE TBD</span>
+        <div class="flow-row">
+
+          <!-- Task 11 -->
+          <div class="step-wrap s-notstart">
+            <div class="step-node">
+              <div class="step-title">I/O Test On-Site → Back to Original</div>
+              <span class="step-status ss-notstart"><span class="step-dot"></span>Not Started</span>
+            </div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="decision-wrap d-tbd">
+            <div class="diamond-outer"><div class="diamond-shape"><div class="diamond-text">I/O<br>OK?</div></div></div>
+            <div class="diamond-label">⏳ TBD</div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+          <!-- Task 12 -->
+          <div class="step-wrap s-notstart">
+            <div class="step-node">
+              <div class="step-title">Communication Test On-Site → Back to Original</div>
+              <span class="step-status ss-notstart"><span class="step-dot"></span>Not Started</span>
+            </div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+          <!-- Task 13 -->
+          <div class="step-wrap s-notstart">
+            <div class="step-node">
+              <div class="step-title">Inverter Test On-Site → Back to Original</div>
+              <span class="step-status ss-notstart"><span class="step-dot"></span>Not Started</span>
+            </div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+          <!-- Task 14 -->
+          <div class="step-wrap s-notstart">
+            <div class="step-node">
+              <div class="step-title">Test Production Mode / CIP Mode</div>
+              <span class="step-status ss-notstart"><span class="step-dot"></span>Not Started</span>
+            </div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="decision-wrap d-tbd">
+            <div class="diamond-outer"><div class="diamond-shape"><div class="diamond-text">PROD<br>TEST<br>OK?</div></div></div>
+            <div class="diamond-label">⏳ TBD</div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+
+          <!-- Task 15 -->
+          <div class="step-wrap s-notstart">
+            <div class="step-node">
+              <div class="step-title">Punch-List Follow-up &amp; Defect Correction</div>
+              <span class="step-status ss-notstart"><span class="step-dot"></span>Not Started</span>
+            </div>
+          </div>
+          <div class="arrow"><div class="arrow-line"></div><div class="arrow-head"></div></div>
+          <div class="decision-wrap d-tbd">
+            <div class="diamond-outer"><div class="diamond-shape"><div class="diamond-text">SYSTEM<br>ACCEPTED?</div></div></div>
+            <div class="diamond-label">⏳ TBD</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /phases -->
+
+  <!-- ── SUMMARY PILLS ── -->
+  <div class="summary-row">
+    <div class="pill">
+      <div class="pill-icon">✅</div>
+      <div>
+        <div class="pill-val pv-green">7</div>
+        <div class="pill-key">COMPLETE</div>
+      </div>
+    </div>
+    <div class="pill">
+      <div class="pill-icon">🔄</div>
+      <div>
+        <div class="pill-val pv-yellow">2</div>
+        <div class="pill-key">IN PROGRESS</div>
+      </div>
+    </div>
+    <div class="pill">
+      <div class="pill-icon">⏳</div>
+      <div>
+        <div class="pill-val pv-grey">6</div>
+        <div class="pill-key">NOT STARTED</div>
+      </div>
+    </div>
+    <div class="pill">
+      <div class="pill-icon">🔷</div>
+      <div>
+        <div class="pill-val pv-blue">15</div>
+        <div class="pill-key">TOTAL TASKS</div>
+      </div>
+    </div>
+    <div class="pill">
+      <div class="pill-icon">📅</div>
+      <div>
+        <div class="pill-val pv-blue" style="font-size:20px">Apr 2026</div>
+        <div class="pill-key">TARGET COMPLETION</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>ST3 TLC · UHT-TA UPGRADE · S7-300 → S7-1500 · PROJECT LEADER: HD HUY · BEL TECH VIETNAM · LOCAL SUPPLIER: COSIN AUTOMATION</footer>
+
+</div>
+</body>
+</html>
